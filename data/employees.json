@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "employeeId": "E001",
+    "name": "Alice Johnson",
+    "role": "Manager",
+    "email": "alice.j@example.com",
+    "password": "password123",
+    "managerId": null,
+    "department": "Engineering"
+  },
+  {
+    "id": 2,
+    "employeeId": "E002",
+    "name": "Bob Williams",
+    "role": "Employee",
+    "email": "bob.w@example.com",
+    "password": "password123",
+    "managerId": 1,
+    "department": "Engineering"
+  },
+  {
+    "id": 3,
+    "employeeId": "E003",
+    "name": "Charlie Brown",
+    "role": "Employee",
+    "email": "charlie.b@example.com",
+    "password": "password123",
+    "managerId": 1,
+    "department": "Engineering"
+  },
+  {
+    "id": 4,
+    "employeeId": "E004",
+    "name": "Diana Prince",
+    "role": "HR",
+    "email": "diana.p@example.com",
+    "password": "password123",
+    "managerId": null,
+    "department": "HR"
+  },
+  {
+    "id": 5,
+    "employeeId": "E005",
+    "name": "Ethan Hunt",
+    "role": "Security",
+    "email": "ethan.h@example.com",
+    "password": "password123",
+    "managerId": 4,
+    "department": "Security"
+  }
+]

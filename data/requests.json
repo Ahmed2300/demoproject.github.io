@@ -1,0 +1,29 @@
+[
+  {
+    "requestId": "R001",
+    "employeeId": "E002",
+    "managerId": "E001",
+    "requestType": "Work From Home",
+    "date": "2025-08-27",
+    "reason": "Doctor's appointment in the afternoon.",
+    "status": "Pending"
+  },
+  {
+    "requestId": "R002",
+    "employeeId": "E003",
+    "managerId": "E001",
+    "requestType": "Sick Leave",
+    "date": "2025-08-26",
+    "reason": "Feeling unwell.",
+    "status": "Approved"
+  },
+  {
+    "requestId": "R003",
+    "employeeId": "E002",
+    "managerId": "E001",
+    "requestType": "Permission for Late Arrival",
+    "date": "2025-08-28",
+    "reason": "Train delay.",
+    "status": "Rejected"
+  }
+]

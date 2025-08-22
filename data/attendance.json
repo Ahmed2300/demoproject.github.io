@@ -1,0 +1,34 @@
+[
+  {
+    "recordId": "A001",
+    "employeeId": "E002",
+    "date": "2025-08-25",
+    "checkIn": "09:15",
+    "checkOut": "17:05",
+    "status": "Late"
+  },
+  {
+    "recordId": "A002",
+    "employeeId": "E003",
+    "date": "2025-08-25",
+    "checkIn": "08:55",
+    "checkOut": "17:00",
+    "status": "On-Time"
+  },
+  {
+    "recordId": "A003",
+    "employeeId": "E002",
+    "date": "2025-08-26",
+    "checkIn": null,
+    "checkOut": null,
+    "status": "Absent"
+  },
+  {
+    "recordId": "A004",
+    "employeeId": "E003",
+    "date": "2025-08-26",
+    "checkIn": "09:00",
+    "checkOut": "18:30",
+    "status": "Overtime"
+  }
+]

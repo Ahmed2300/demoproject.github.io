@@ -1,0 +1,56 @@
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    border-radius: 50rem;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.badge-approved {
+    background: var(--success-color);
+}
+
+.badge-pending {
+    background: var(--warning-color);
+    color: var(--dark-color);
+}
+
+.badge-rejected {
+    background: var(--danger-color);
+}
+
+.badge-high-priority {
+    background: var(--danger-color);
+}
+
+.badge-medium-priority {
+    background: var(--warning-color);
+    color: var(--dark-color);
+}
+
+.badge-low-priority {
+    background: var(--info-color);
+}
+
+/* Status badges with dots */
+.badge-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: var(--light-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+.badge-status .status-dot {
+    width: 6px;
+    height: 6px;
+}

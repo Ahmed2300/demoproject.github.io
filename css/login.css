@@ -1,0 +1,50 @@
+/* Login Page Styles */
+body.login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: var(--bg-color);
+}
+
+.login-container {
+    width: 100%;
+    max-width: 400px;
+    padding: 40px;
+    background: #fff;
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--card-shadow);
+    text-align: center;
+}
+
+.login-container h1 {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+}
+
+.login-container p {
+    color: var(--text-muted);
+    margin-bottom: 30px;
+}
+
+#login-form .form-group {
+    text-align: left;
+}
+
+#login-form .form-label {
+    font-weight: 600;
+}
+
+#login-form button {
+    width: 100%;
+    margin-top: 10px;
+}
+
+.error-message {
+    color: var(--danger-color);
+    background: rgba(239, 68, 68, 0.1);
+    padding: 10px;
+    border-radius: var(--border-radius);
+    margin-top: 20px;
+    display: none; /* Hidden by default */
+}

@@ -1,0 +1,42 @@
+[
+  {
+    "taskId": "T001",
+    "assignedTo": "E002",
+    "assignedBy": "E001",
+    "title": "Develop User Authentication Module",
+    "description": "Implement login and registration functionality.",
+    "status": "In-Progress",
+    "priority": "High",
+    "dueDate": "2025-09-05"
+  },
+  {
+    "taskId": "T002",
+    "assignedTo": "E003",
+    "assignedBy": "E001",
+    "title": "Design Database Schema",
+    "description": "Create the initial database schema for the project.",
+    "status": "To-Do",
+    "priority": "High",
+    "dueDate": "2025-09-02"
+  },
+  {
+    "taskId": "T003",
+    "assignedTo": "E002",
+    "assignedBy": "E001",
+    "title": "Fix UI Bugs on Dashboard",
+    "description": "Resolve alignment issues on the main dashboard.",
+    "status": "Done",
+    "priority": "Medium",
+    "dueDate": "2025-08-25"
+  },
+  {
+    "taskId": "T004",
+    "assignedTo": "E003",
+    "assignedBy": "E001",
+    "title": "Write API Documentation",
+    "description": "Document all the public API endpoints.",
+    "status": "To-Do",
+    "priority": "Low",
+    "dueDate": "2025-09-10"
+  }
+]

@@ -1,0 +1,18 @@
+[
+  {
+    "payrollId": "P001",
+    "employeeId": "E002",
+    "month": "August 2025",
+    "totalDeductions": 150.00,
+    "overtimePay": 120.00,
+    "netPay": 2970.00
+  },
+  {
+    "payrollId": "P002",
+    "employeeId": "E003",
+    "month": "August 2025",
+    "totalDeductions": 0.00,
+    "overtimePay": 200.00,
+    "netPay": 3200.00
+  }
+]
