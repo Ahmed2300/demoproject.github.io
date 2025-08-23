@@ -8,6 +8,101 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
     <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f1f8e9 100%);
+            min-height: 100vh;
+        }
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .navbar-brand, .nav-link {
+            color: #333 !important;
+        }
+        .navbar-brand:hover, .nav-link:hover {
+            color: #81d4fa !important;
+        }
+        .card {
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.95);
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+        .card-header {
+            background: linear-gradient(135deg, #81d4fa 0%, #4fc3f7 100%);
+            color: white;
+            border-bottom: none;
+            padding: 1.5rem;
+            border-radius: 16px 16px 0 0 !important;
+        }
+        .stats-card {
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        .stats-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+        .page-header {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .btn {
+            border-radius: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #81d4fa 0%, #4fc3f7 100%);
+            border: none;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(129, 212, 250, 0.4);
+        }
+        .btn-outline-primary {
+            border-color: #81d4fa;
+            color: #81d4fa;
+        }
+        .btn-outline-primary:hover {
+            background: #81d4fa;
+            border-color: #81d4fa;
+        }
+        .table {
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .table thead th {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border: none;
+            font-weight: 600;
+            color: #495057;
+        }
+        .calendar-day {
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        .calendar-day:hover {
+            transform: scale(1.05);
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -44,11 +139,25 @@
     </nav>
 
     <div class="container-fluid py-4">
-        <div class="row">
+        <!-- Enhanced Page Header -->
+        <div class="row mb-4">
             <div class="col-12">
-                <h2 class="mb-4">
-                    <i class="fas fa-user me-2"></i>Welcome, <span id="employee-name"></span>!
-                </h2>
+                <div class="page-header">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h1 class="display-6 fw-bold mb-2 text-primary">
+                                <i class="fas fa-user-circle me-3 text-primary"></i>My Dashboard
+                            </h1>
+                            <p class="text-muted mb-0">Welcome back, <span id="employee-name" class="fw-semibold"></span>! Track your attendance and manage your tasks</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <div class="d-flex align-items-center justify-content-end">
+                                <i class="fas fa-calendar-alt text-muted me-2"></i>
+                                <span class="text-muted" id="current-date"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -62,34 +171,57 @@
                         </h5>
                     </div>
                     <div class="card-body">
-                        <div id="calendar"></div>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <button class="btn btn-outline-primary btn-sm" id="prev-month">
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                            </div>
+                            <div class="col-md-8 text-center">
+                                <h6 id="current-month" class="mb-0"></h6>
+                            </div>
+                            <div class="col-md-2 text-end">
+                                <button class="btn btn-outline-primary btn-sm" id="next-month">
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="calendar-grid" class="mt-3"></div>
                     </div>
                 </div>
             </div>
 
             <!-- Quick Stats -->
             <div class="col-lg-4 mb-4">
-                <div class="card bg-primary text-white mb-3">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between">
+                <div class="card stats-card mb-3" style="background: linear-gradient(135deg, #81d4fa 0%, #b3e5fc 100%); color: white;">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <h6 class="card-title">This Month</h6>
-                                <h3 id="monthly-attendance">0</h3>
-                                <small>Days Present</small>
+                                <p class="card-text mb-1 opacity-75">This Month</p>
+                                <h2 class="fw-bold mb-0" id="monthly-attendance">0</h2>
+                                <small class="opacity-75">
+                                    <i class="fas fa-calendar-check me-1"></i>Days Present
+                                </small>
                             </div>
-                            <i class="fas fa-calendar-check fa-2x opacity-75"></i>
+                            <div class="text-end">
+                                <i class="fas fa-calendar-check fa-3x opacity-50"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div class="card bg-success text-white">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between">
+                <div class="card stats-card" style="background: linear-gradient(135deg, #a5d6a7 0%, #c8e6c9 100%); color: white;">
+                    <div class="card-body p-4">
+                        <div class="d-flex justify-content-between align-items-center">
                             <div>
-                                <h6 class="card-title">On-Time Rate</h6>
-                                <h3 id="ontime-rate">0%</h3>
-                                <small>This Month</small>
+                                <p class="card-text mb-1 opacity-75">On-Time Rate</p>
+                                <h2 class="fw-bold mb-0" id="ontime-rate">0%</h2>
+                                <small class="opacity-75">
+                                    <i class="fas fa-clock me-1"></i>This Month
+                                </small>
                             </div>
-                            <i class="fas fa-clock fa-2x opacity-75"></i>
+                            <div class="text-end">
+                                <i class="fas fa-clock fa-3x opacity-50"></i>
+                            </div>
                         </div>
                     </div>
                 </div>

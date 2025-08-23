@@ -1,4 +1,16 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function() {
+    // Set current date
+    const currentDate = new Date().toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+    const dateElement = document.getElementById('current-date');
+    if (dateElement) {
+        dateElement.textContent = currentDate;
+    }
+
     const loggedInUser = protectPage();
     if (!loggedInUser || loggedInUser.role.toLowerCase() !== 'employee') {
         console.error('Access denied: Employee role required');
@@ -6,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const currentEmployeeId = loggedInUser.employeeId;
-    const kanbanBoard = document.getElementById('tasks-board');
+    const kanbanBoard = document.getElementById('kanban-board');
 
     initializeData().then(() => {
         renderTasksBoard();
@@ -18,17 +30,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Create Kanban columns
         kanbanBoard.innerHTML = `
-            <div class="kanban-column">
-                <h3>To-Do</h3>
-                <div class="kanban-tasks" id="todo-tasks"></div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h6 class="mb-0">To-Do</h6>
+                    </div>
+                    <div class="card-body p-2" id="todo-tasks">
+                        <!-- Tasks will be populated here -->
+                    </div>
+                </div>
             </div>
-            <div class="kanban-column">
-                <h3>In Progress</h3>
-                <div class="kanban-tasks" id="inprogress-tasks"></div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-warning text-white">
+                        <h6 class="mb-0">In Progress</h6>
+                    </div>
+                    <div class="card-body p-2" id="inprogress-tasks">
+                        <!-- Tasks will be populated here -->
+                    </div>
+                </div>
             </div>
-            <div class="kanban-column">
-                <h3>Done</h3>
-                <div class="kanban-tasks" id="done-tasks"></div>
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h6 class="mb-0">Done</h6>
+                    </div>
+                    <div class="card-body p-2" id="done-tasks">
+                        <!-- Tasks will be populated here -->
+                    </div>
+                </div>
             </div>
         `;
 
@@ -43,21 +73,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
         employeeTasks.forEach(task => {
             const card = document.createElement('div');
-            card.className = 'kanban-card';
+            card.className = 'card mb-2';
             card.innerHTML = `
-                <div class="kanban-card-header">
-                    <h4>${task.title}</h4>
-                    <span class="badge ${getBadgeClass(task.priority)}">${task.priority}</span>
-                </div>
-                <p>${task.description}</p>
-                <div class="kanban-card-footer">
-                    <small>Due: ${formatDate(task.dueDate)}</small><br>
-                    <div class="task-actions">
-                        ${task.status !== 'Done' ? `
-                            <button onclick="updateTaskStatus('${task.taskId}', '${getNextStatus(task.status)}')" class="btn-small btn-primary">
-                                ${getNextStatus(task.status)}
-                            </button>
-                        ` : '<span class="badge badge-approved">Completed</span>'}
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6 class="card-title mb-0">${task.title}</h6>
+                        <span class="badge ${getBadgeClass(task.priority)}">${task.priority}</span>
+                    </div>
+                    <p class="card-text small text-muted mb-2">${task.description}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <small class="text-muted">
+                            <i class="fas fa-calendar me-1"></i>${formatDate(task.dueDate)}
+                        </small>
+                        <div class="task-actions">
+                            ${task.status !== 'Done' ? `
+                                <button onclick="updateTaskStatus('${task.taskId}', '${getNextStatus(task.status)}')" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-arrow-right me-1"></i>${getNextStatus(task.status)}
+                                </button>
+                            ` : '<span class="badge bg-success">Completed</span>'}
+                        </div>
                     </div>
                 </div>
             `;
@@ -112,11 +146,11 @@ document.addEventListener('DOMContentLoaded', () => {
 function getBadgeClass(priority) {
     switch (priority) {
         case 'High':
-            return 'badge-rejected';
+            return 'bg-danger';
         case 'Medium':
-            return 'badge-pending';
+            return 'bg-warning';
         case 'Low':
-            return 'badge-approved';
+            return 'bg-success';
         default:
             return '';
     }

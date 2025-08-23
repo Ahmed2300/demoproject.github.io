@@ -1,4 +1,16 @@
 document.addEventListener('DOMContentLoaded', function() {
+    // Set current date
+    const currentDate = new Date().toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+    const dateElement = document.getElementById('current-date');
+    if (dateElement) {
+        dateElement.textContent = currentDate;
+    }
+
     const loggedInUser = protectPage();
     if (!loggedInUser || loggedInUser.role.toLowerCase() !== 'employee') {
         console.error('Access denied: Employee role required');
@@ -28,15 +40,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
+            const employees = getEmployees();
+            const currentEmployee = employees.find(emp => emp.employeeId === currentEmployeeId);
+            
+            // Find manager's employeeId instead of using managerId
+            const manager = employees.find(emp => emp.id === currentEmployee.managerId);
+            
             const newRequest = {
                 requestId: `R${Date.now()}`,
                 employeeId: currentEmployeeId,
-                managerId: loggedInUser.managerId,
+                managerId: manager ? manager.employeeId : null,
                 requestType: requestType,
                 date: requestDate,
                 reason: requestReason.trim(),
                 status: 'Pending'
             };
+            
+            console.log('Creating request:', newRequest);
+            console.log('Current employee:', currentEmployee);
+            console.log('Manager found:', manager);
             
             try {
                 saveNewRequest(newRequest);
@@ -87,10 +109,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Helper functions
     function getStatusBadgeClass(status) {
         switch(status.toLowerCase()) {
-            case 'approved': return 'badge-approved';
-            case 'pending': return 'badge-pending';
-            case 'rejected': return 'badge-rejected';
-            default: return 'badge-pending';
+            case 'approved': return 'bg-success';
+            case 'pending': return 'bg-warning';
+            case 'rejected': return 'bg-danger';
+            default: return 'bg-warning';
         }
     }
 
@@ -104,31 +126,40 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function showNotification(message, type = 'info') {
-        // Create notification element
-        const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
-        notification.textContent = message;
+        // Create Bootstrap toast
+        const toastContainer = document.getElementById('toast-container') || createToastContainer();
+        const toastId = 'toast-' + Date.now();
         
-        // Add styles
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 12px 24px;
-            border-radius: 8px;
-            color: white;
-            font-weight: 500;
-            z-index: 1000;
-            animation: slideIn 0.3s ease;
-            background: ${type === 'success' ? '#28a745' : type === 'error' ? '#dc3545' : '#007bff'};
+        const toastHTML = `
+            <div id="${toastId}" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header">
+                    <i class="fas fa-${type === 'success' ? 'check-circle text-success' : type === 'error' ? 'exclamation-circle text-danger' : 'info-circle text-primary'} me-2"></i>
+                    <strong class="me-auto">${type === 'success' ? 'Success' : type === 'error' ? 'Error' : 'Info'}</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast"></button>
+                </div>
+                <div class="toast-body">
+                    ${message}
+                </div>
+            </div>
         `;
         
-        document.body.appendChild(notification);
+        toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+        const toastElement = document.getElementById(toastId);
+        const toast = new bootstrap.Toast(toastElement);
+        toast.show();
         
-        // Remove after 3 seconds
-        setTimeout(() => {
-            notification.style.animation = 'slideOut 0.3s ease';
-            setTimeout(() => notification.remove(), 300);
-        }, 3000);
+        // Remove toast element after it's hidden
+        toastElement.addEventListener('hidden.bs.toast', () => {
+            toastElement.remove();
+        });
+    }
+    
+    function createToastContainer() {
+        const container = document.createElement('div');
+        container.id = 'toast-container';
+        container.className = 'toast-container position-fixed top-0 end-0 p-3';
+        container.style.zIndex = '1055';
+        document.body.appendChild(container);
+        return container;
     }
 });

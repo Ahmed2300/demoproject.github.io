@@ -6,7 +6,58 @@
     <title>Team Attendance - Manager</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #e3f2fd 0%, #f1f8e9 100%);
+            min-height: 100vh;
+        }
+        .navbar {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .navbar-brand, .nav-link {
+            color: #333 !important;
+            font-weight: 500;
+        }
+        .navbar-brand:hover, .nav-link:hover {
+            color: #667eea !important;
+        }
+        .btn-outline-light {
+            color: #333;
+            border-color: #333;
+        }
+        .btn-outline-light:hover {
+            background-color: #667eea;
+            border-color: #667eea;
+            color: white;
+        }
+        .page-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .attendance-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .table-container {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -43,31 +94,54 @@
     </nav>
 
     <div class="container-fluid py-4">
-        <div class="row">
-            <div class="col-12">
-                <h2 class="mb-4">
-                    <i class="fas fa-users me-2"></i>Team Attendance
-                </h2>
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="fw-bold text-dark mb-2">
+                        <i class="fas fa-users me-3 text-primary"></i>Team Attendance
+                    </h1>
+                    <p class="text-muted mb-0">Monitor and track your team's attendance records</p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="d-flex align-items-center justify-content-end">
+                        <i class="fas fa-calendar-alt text-muted me-2"></i>
+                        <span class="text-muted" id="current-date"></span>
+                    </div>
+                </div>
             </div>
         </div>
 
         <div class="row">
             <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title mb-0">
-                            <i class="fas fa-calendar-check me-2"></i>Team Attendance Records
-                        </h5>
+                <div class="card attendance-section">
+                    <div class="card-header" style="background: linear-gradient(135deg, #81d4fa 0%, #4fc3f7 100%); color: white; padding: 1.5rem;">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h4 class="card-title mb-0 fw-semibold">
+                                    <i class="fas fa-calendar-check me-2"></i>Team Attendance Records
+                                </h4>
+                                <small class="opacity-75">Track daily attendance for your team members</small>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn btn-outline-light btn-sm">
+                                    <i class="fas fa-filter me-1"></i>Filter
+                                </button>
+                                <button class="btn btn-light btn-sm">
+                                    <i class="fas fa-download me-1"></i>Export
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-striped" id="team-attendance-table">
-                                <thead>
+                    <div class="card-body p-4">
+                        <div class="table-container">
+                            <table class="table table-hover" id="team-attendance-table">
+                                <thead class="table-light">
                                     <tr>
-                                        <th>Employee Name</th>
-                                        <th>Date</th>
-                                        <th>Check-in Time</th>
-                                        <th>Status</th>
+                                        <th class="fw-semibold">Employee Name</th>
+                                        <th class="fw-semibold">Date</th>
+                                        <th class="fw-semibold">Check-in Time</th>
+                                        <th class="fw-semibold">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
