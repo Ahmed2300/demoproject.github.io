@@ -130,6 +130,25 @@
             </div>
         </div>
 
+        <!-- Needs Attention Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card task-section">
+                    <div class="card-header" style="background: linear-gradient(135deg, #ff7043 0%, #d84315 100%); color: white; padding: 1.5rem;">
+                        <h5 class="card-title mb-0 fw-semibold">
+                            <i class="fas fa-exclamation-triangle me-2"></i>Needs Attention
+                        </h5>
+                        <small class="opacity-75">Overdue tasks and deadline extensions requiring review</small>
+                    </div>
+                    <div class="card-body p-4">
+                        <div id="needs-attention-list">
+                            <!-- Overdue tasks and extension requests will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="row mb-4">
             <!-- Task Assignment Form -->
             <div class="col-lg-4">
@@ -161,6 +180,7 @@
                                 <label for="task-priority" class="form-label fw-medium text-dark">Priority</label>
                                 <select id="task-priority" class="form-select" required>
                                     <option value="">Select priority...</option>
+                                    <option value="Critical">Critical</option>
                                     <option value="High">High</option>
                                     <option value="Medium">Medium</option>
                                     <option value="Low">Low</option>

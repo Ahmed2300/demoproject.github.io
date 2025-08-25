@@ -161,26 +161,66 @@
                         </h5>
                     </div>
                     <div class="card-body">
+                        <!-- Quota Display -->
+                        <div class="mb-4" id="quotaDisplay">
+                            <h6 class="text-muted mb-3">Monthly Quotas</h6>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <div class="text-center p-2 bg-light rounded">
+                                        <small class="text-muted d-block">Tardiness</small>
+                                        <span class="fw-bold" id="tardinessQuota">0/2</span>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-center p-2 bg-light rounded">
+                                        <small class="text-muted d-block">Absence</small>
+                                        <span class="fw-bold" id="absenceQuota">0/3</span>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-center p-2 bg-light rounded">
+                                        <small class="text-muted d-block">WFH</small>
+                                        <span class="fw-bold" id="wfhQuota">0/5</span>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="text-center p-2 bg-light rounded">
+                                        <small class="text-muted d-block">Overtime</small>
+                                        <span class="fw-bold" id="overtimeQuota">0/20h</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <form id="newRequestForm">
                             <div class="mb-3">
                                 <label for="requestType" class="form-label">Request Type</label>
                                 <select id="requestType" class="form-select" required>
                                     <option value="">Select request type...</option>
-                                    <option value="Leave">Leave Request</option>
-                                    <option value="Remote Work">Remote Work</option>
-                                    <option value="Training">Training Request</option>
-                                    <option value="Equipment">Equipment Request</option>
+                                    <option value="Tardiness">Tardiness Permission</option>
+                                    <option value="Absence">Absence Request</option>
+                                    <option value="Work from Home">Work from Home</option>
+                                    <option value="Overtime">Overtime Request</option>
+                                    <option value="Deadline Extension">Deadline Extension</option>
                                 </select>
                             </div>
-                            <div class="mb-3">
-                                <label for="requestDate" class="form-label">Date</label>
-                                <input type="date" id="requestDate" class="form-control" required>
-                            </div>
+                            
+                            <!-- Dynamic form fields based on request type -->
+                            <div id="dynamicFields"></div>
+                            
                             <div class="mb-3">
                                 <label for="requestReason" class="form-label">Reason</label>
                                 <textarea id="requestReason" class="form-control" rows="3" placeholder="Reason for request..." required></textarea>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100">
+                            
+                            <div class="mb-3" id="quotaWarning" style="display: none;">
+                                <div class="alert alert-warning mb-0">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    <span id="quotaWarningText"></span>
+                                </div>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary w-100" id="submitBtn">
                                 <i class="fas fa-paper-plane me-2"></i>Submit Request
                             </button>
                         </form>
@@ -206,6 +246,7 @@
                                         <th>Date</th>
                                         <th>Status</th>
                                         <th>Reason</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>

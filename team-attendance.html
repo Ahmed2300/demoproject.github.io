@@ -112,6 +112,82 @@
             </div>
         </div>
 
+        <!-- KPI Cards Section -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card attendance-section">
+                    <div class="card-body text-center">
+                        <div class="d-flex align-items-center justify-content-center mb-2">
+                            <i class="fas fa-check-circle text-success fa-2x me-2"></i>
+                            <div>
+                                <h3 class="mb-0" id="present-count">0</h3>
+                                <small class="text-muted">Present Today</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card attendance-section">
+                    <div class="card-body text-center">
+                        <div class="d-flex align-items-center justify-content-center mb-2">
+                            <i class="fas fa-clock text-warning fa-2x me-2"></i>
+                            <div>
+                                <h3 class="mb-0" id="late-count">0</h3>
+                                <small class="text-muted">Late Today</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card attendance-section">
+                    <div class="card-body text-center">
+                        <div class="d-flex align-items-center justify-content-center mb-2">
+                            <i class="fas fa-times-circle text-danger fa-2x me-2"></i>
+                            <div>
+                                <h3 class="mb-0" id="absent-count">0</h3>
+                                <small class="text-muted">Absent Today</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card attendance-section">
+                    <div class="card-body text-center">
+                        <div class="d-flex align-items-center justify-content-center mb-2">
+                            <i class="fas fa-home text-info fa-2x me-2"></i>
+                            <div>
+                                <h3 class="mb-0" id="wfh-count">0</h3>
+                                <small class="text-muted">WFH Today</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attendance Heatmap Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card attendance-section">
+                    <div class="card-header" style="background: linear-gradient(135deg, #a5d6a7 0%, #66bb6a 100%); color: white; padding: 1.5rem;">
+                        <h4 class="card-title mb-0 fw-semibold">
+                            <i class="fas fa-chart-line me-2"></i>Attendance Heatmap
+                        </h4>
+                        <small class="opacity-75">Visual overview of team attendance patterns</small>
+                    </div>
+                    <div class="card-body p-4">
+                        <div id="attendance-heatmap">
+                            <!-- Heatmap will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detailed Records Section -->
         <div class="row">
             <div class="col-12">
                 <div class="card attendance-section">
@@ -141,7 +217,10 @@
                                         <th class="fw-semibold">Employee Name</th>
                                         <th class="fw-semibold">Date</th>
                                         <th class="fw-semibold">Check-in Time</th>
+                                        <th class="fw-semibold">Check-out Time</th>
                                         <th class="fw-semibold">Status</th>
+                                        <th class="fw-semibold">Minutes Late</th>
+                                        <th class="fw-semibold">Penalty</th>
                                     </tr>
                                 </thead>
                                 <tbody>

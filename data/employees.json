@@ -7,7 +7,8 @@
     "email": "alice.j@example.com",
     "password": "password123",
     "managerId": null,
-    "department": "Engineering"
+    "department": "Engineering",
+    "dailyPay": 200.00
   },
   {
     "id": 2,
@@ -17,7 +18,8 @@
     "email": "bob.w@example.com",
     "password": "password123",
     "managerId": 1,
-    "department": "Engineering"
+    "department": "Engineering",
+    "dailyPay": 150.00
   },
   {
     "id": 3,
@@ -27,7 +29,8 @@
     "email": "charlie.b@example.com",
     "password": "password123",
     "managerId": 1,
-    "department": "Engineering"
+    "department": "Engineering",
+    "dailyPay": 160.00
   },
   {
     "id": 4,
@@ -37,7 +40,8 @@
     "email": "diana.p@example.com",
     "password": "password123",
     "managerId": null,
-    "department": "HR"
+    "department": "HR",
+    "dailyPay": 180.00
   },
   {
     "id": 5,
@@ -47,6 +51,7 @@
     "email": "ethan.h@example.com",
     "password": "password123",
     "managerId": 4,
-    "department": "Security"
+    "department": "Security",
+    "dailyPay": 140.00
   }
 ]

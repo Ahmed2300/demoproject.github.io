@@ -147,8 +147,177 @@ function updateRequestStatus(requestId, newStatus) {
     let requests = JSON.parse(localStorage.getItem('requests')) || [];
     const requestIndex = requests.findIndex(req => req.requestId === requestId);
     if (requestIndex !== -1) {
-        requests[requestIndex].status = newStatus;
+        const request = requests[requestIndex];
+        request.status = newStatus;
+        request.processedDate = new Date().toISOString().slice(0, 10);
+        
+        // Apply request decision effects
+        applyRequestDecisionEffects(request, newStatus);
+        
         localStorage.setItem('requests', JSON.stringify(requests));
+    }
+}
+
+function applyRequestDecisionEffects(request, status) {
+    const attendance = JSON.parse(localStorage.getItem('attendance')) || [];
+    
+    if (status === 'Approved') {
+        handleApprovedRequest(request, attendance);
+    } else if (status === 'Rejected') {
+        handleRejectedRequest(request, attendance);
+    }
+    
+    localStorage.setItem('attendance', JSON.stringify(attendance));
+}
+
+function handleApprovedRequest(request, attendance) {
+    switch (request.requestType) {
+        case 'Tardiness':
+            handleApprovedTardiness(request, attendance);
+            break;
+        case 'Work from Home':
+            handleApprovedWFH(request, attendance);
+            break;
+        case 'Absence':
+            handleApprovedAbsence(request, attendance);
+            break;
+        case 'Overtime':
+            handleApprovedOvertime(request, attendance);
+            break;
+    }
+}
+
+function handleRejectedRequest(request, attendance) {
+    switch (request.requestType) {
+        case 'Absence':
+            handleRejectedAbsence(request, attendance);
+            break;
+    }
+}
+
+function handleApprovedTardiness(request, attendance) {
+    // Find attendance record for the requested date
+    const attendanceRecord = attendance.find(rec => 
+        rec.employeeId === request.employeeId && 
+        rec.date === request.date
+    );
+    
+    if (attendanceRecord && attendanceRecord.status === 'Late') {
+        // Waive financial deduction for approved tardiness
+        attendanceRecord.status = 'Present';
+        attendanceRecord.tardinessWaived = true;
+        attendanceRecord.approvedLatePermission = true;
+        if (attendanceRecord.penalties) {
+            attendanceRecord.penalties.wageDeduction = 0;
+            attendanceRecord.penalties.originalDeduction = attendanceRecord.penalties.wageDeduction;
+        }
+    }
+}
+
+function handleApprovedWFH(request, attendance) {
+    // Create or update attendance record for WFH date
+    let attendanceRecord = attendance.find(rec => 
+        rec.employeeId === request.employeeId && 
+        rec.date === request.date
+    );
+    
+    if (!attendanceRecord) {
+        // Create new attendance record for WFH
+        attendanceRecord = {
+            recordId: `ATT${Date.now()}`,
+            employeeId: request.employeeId,
+            date: request.date,
+            checkInTime: '09:00',
+            checkOutTime: '17:00',
+            status: 'Present (WFH)',
+            workFromHome: true,
+            penalties: { wageDeduction: 0, vacationDayDeducted: false }
+        };
+        attendance.push(attendanceRecord);
+    } else {
+        // Update existing record
+        attendanceRecord.status = 'Present (WFH)';
+        attendanceRecord.workFromHome = true;
+        if (attendanceRecord.penalties) {
+            attendanceRecord.penalties.wageDeduction = 0;
+        }
+    }
+}
+
+function handleApprovedAbsence(request, attendance) {
+    // For approved absence, create attendance record with no penalties
+    let attendanceRecord = attendance.find(rec => 
+        rec.employeeId === request.employeeId && 
+        rec.date === request.startDate
+    );
+    
+    if (!attendanceRecord) {
+        attendanceRecord = {
+            recordId: `ATT${Date.now()}`,
+            employeeId: request.employeeId,
+            date: request.startDate,
+            checkInTime: null,
+            checkOutTime: null,
+            status: 'Approved Absence',
+            approvedAbsence: true,
+            penalties: { wageDeduction: 0, vacationDayDeducted: false }
+        };
+        attendance.push(attendanceRecord);
+    } else {
+        attendanceRecord.status = 'Approved Absence';
+        attendanceRecord.approvedAbsence = true;
+        if (attendanceRecord.penalties) {
+            attendanceRecord.penalties.wageDeduction = 0;
+            attendanceRecord.penalties.vacationDayDeducted = false;
+        }
+    }
+}
+
+function handleApprovedOvertime(request, attendance) {
+    // Record approved overtime
+    let attendanceRecord = attendance.find(rec => 
+        rec.employeeId === request.employeeId && 
+        rec.date === request.date
+    );
+    
+    if (attendanceRecord) {
+        attendanceRecord.overtimeHours = parseInt(request.hours) || 0;
+        attendanceRecord.approvedOvertime = true;
+    }
+}
+
+function handleRejectedAbsence(request, attendance) {
+    // Check if employee was actually absent on the requested date
+    const attendanceRecord = attendance.find(rec => 
+        rec.employeeId === request.employeeId && 
+        rec.date === request.startDate
+    );
+    
+    // If no attendance record exists, employee was absent
+    if (!attendanceRecord) {
+        // Create attendance record with full deductions
+        const newRecord = {
+            recordId: `ATT${Date.now()}`,
+            employeeId: request.employeeId,
+            date: request.startDate,
+            checkInTime: null,
+            checkOutTime: null,
+            status: 'Absent (Unauthorized)',
+            rejectedAbsence: true,
+            penalties: { 
+                wageDeduction: 100, // Full day deduction
+                vacationDayDeducted: true // Annual leave deduction
+            }
+        };
+        attendance.push(newRecord);
+    } else if (attendanceRecord.status === 'Absent') {
+        // Update existing absent record with penalties
+        attendanceRecord.status = 'Absent (Unauthorized)';
+        attendanceRecord.rejectedAbsence = true;
+        attendanceRecord.penalties = { 
+            wageDeduction: 100,
+            vacationDayDeducted: true
+        };
     }
 }
 

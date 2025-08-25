@@ -9,24 +9,44 @@ document.addEventListener('DOMContentLoaded', () => {
     const teamAttendanceTableBody = document.querySelector('#team-attendance-table tbody');
 
     initializeData().then(() => {
+        renderKPICards(managerId);
+        renderAttendanceHeatmap(managerId);
         renderTeamAttendance();
         setupAttendanceFilterButtons(managerId);
+        
+        // Set current date
+        const currentDate = new Date().toLocaleDateString('en-US', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        const dateElement = document.getElementById('current-date');
+        if (dateElement) {
+            dateElement.textContent = currentDate;
+        }
     });
 
     // This function will be redefined below to support filters
 
     function getBadgeClass(status) {
         switch (status) {
+            case 'Present':
             case 'On-Time':
-                return 'badge-approved';
+                return 'bg-success text-white';
+            case 'Present (WFH)':
+                return 'bg-info text-white';
             case 'Late':
-                return 'badge-pending';
+                return 'bg-warning text-dark';
             case 'Absent':
-                return 'badge-rejected';
+            case 'Absent (Unauthorized)':
+                return 'bg-danger text-white';
+            case 'Approved Absence':
+                return 'bg-secondary text-white';
             case 'Overtime':
-                return 'badge-low-priority';
+                return 'bg-primary text-white';
             default:
-                return '';
+                return 'bg-light text-dark';
         }
     }
 
@@ -137,17 +157,20 @@ document.addEventListener('DOMContentLoaded', () => {
         const table = document.querySelector('#team-attendance-table');
         if (!table) return;
         
-        let csv = 'Employee Name,Date,Check-in Time,Status\n';
+        let csv = 'Employee Name,Date,Check-in Time,Check-out Time,Status,Minutes Late,Penalty\n';
         const rows = table.querySelectorAll('tbody tr');
         
         rows.forEach(row => {
             const cells = row.querySelectorAll('td');
-            if (cells.length >= 4) {
+            if (cells.length >= 7) {
                 const rowData = [
                     cells[0].textContent.trim(),
                     cells[1].textContent.trim(),
                     cells[2].textContent.trim(),
-                    cells[3].textContent.trim().replace(/[^\w\s-]/g, '')
+                    cells[3].textContent.trim(),
+                    cells[4].textContent.trim().replace(/[^\w\s-]/g, ''),
+                    cells[5].textContent.trim(),
+                    cells[6].textContent.trim()
                 ];
                 csv += rowData.join(',') + '\n';
             }
@@ -236,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (teamAttendance.length === 0) {
-            teamAttendanceTableBody.innerHTML = '<tr><td colspan="4" style="text-align:center;">No attendance records found for your team</td></tr>';
+            teamAttendanceTableBody.innerHTML = '<tr><td colspan="7" style="text-align:center;">No attendance records found for your team</td></tr>';
             return;
         }
 
@@ -247,9 +270,120 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${employee ? employee.name : 'Unknown'}</td>
                 <td>${formatDate(record.date)}</td>
                 <td>${record.checkInTime || 'N/A'}</td>
+                <td>${record.checkOutTime || 'N/A'}</td>
                 <td><span class="badge ${getBadgeClass(record.status)}">${record.status}</span></td>
+                <td>${record.minutesLate || 0} min</td>
+                <td>${calculatePenalty(record, employee)}</td>
             `;
             teamAttendanceTableBody.appendChild(row);
         });
+    }
+
+    // Render KPI Cards
+    function renderKPICards(managerId) {
+        const allEmployees = getEmployees();
+        const teamMemberIds = allEmployees
+            .filter(emp => emp.managerId === managerId)
+            .map(emp => emp.employeeId);
+
+        const allAttendance = JSON.parse(localStorage.getItem('attendance')) || [];
+        const today = new Date().toISOString().split('T')[0];
+        const todayAttendance = allAttendance.filter(rec => 
+            teamMemberIds.includes(rec.employeeId) && rec.date === today
+        );
+
+        const presentCount = todayAttendance.filter(rec => 
+            rec.status === 'Present' || rec.status === 'Present (WFH)'
+        ).length;
+        const lateCount = todayAttendance.filter(rec => rec.status === 'Late').length;
+        const absentCount = todayAttendance.filter(rec => rec.status === 'Absent').length;
+        const wfhCount = todayAttendance.filter(rec => rec.status === 'Present (WFH)').length;
+
+        document.getElementById('present-count').textContent = presentCount;
+        document.getElementById('late-count').textContent = lateCount;
+        document.getElementById('absent-count').textContent = absentCount;
+        document.getElementById('wfh-count').textContent = wfhCount;
+    }
+
+    // Render Attendance Heatmap
+    function renderAttendanceHeatmap(managerId) {
+        const allEmployees = getEmployees();
+        const teamMembers = allEmployees.filter(emp => emp.managerId === managerId);
+        const allAttendance = JSON.parse(localStorage.getItem('attendance')) || [];
+        
+        const heatmapContainer = document.getElementById('attendance-heatmap');
+        if (!heatmapContainer) return;
+
+        // Get last 7 days
+        const days = [];
+        for (let i = 6; i >= 0; i--) {
+            const date = new Date();
+            date.setDate(date.getDate() - i);
+            days.push(date.toISOString().split('T')[0]);
+        }
+
+        let heatmapHTML = `
+            <div class="table-responsive">
+                <table class="table table-sm">
+                    <thead>
+                        <tr>
+                            <th>Employee</th>
+                            ${days.map(day => `<th class="text-center">${new Date(day).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}</th>`).join('')}
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+        teamMembers.forEach(employee => {
+            heatmapHTML += `<tr><td>${employee.name}</td>`;
+            days.forEach(day => {
+                const attendance = allAttendance.find(rec => 
+                    rec.employeeId === employee.employeeId && rec.date === day
+                );
+                const statusClass = attendance ? getHeatmapClass(attendance.status) : 'bg-light';
+                const title = attendance ? `${attendance.status} - ${attendance.checkInTime || 'N/A'}` : 'No record';
+                heatmapHTML += `<td class="text-center"><span class="badge ${statusClass}" title="${title}">●</span></td>`;
+            });
+            heatmapHTML += '</tr>';
+        });
+
+        heatmapHTML += '</tbody></table></div>';
+        heatmapContainer.innerHTML = heatmapHTML;
+    }
+
+    function getHeatmapClass(status) {
+        switch (status) {
+            case 'Present': return 'bg-success';
+            case 'Present (WFH)': return 'bg-info';
+            case 'Late': return 'bg-warning';
+            case 'Absent': return 'bg-danger';
+            case 'Approved Absence': return 'bg-secondary';
+            default: return 'bg-light';
+        }
+    }
+
+    // Calculate penalty based on attendance record
+    function calculatePenalty(record, employee) {
+        if (!record || !employee) return '$0.00';
+        
+        const dailyPay = employee.dailyPay || 150;
+        let penalty = 0;
+
+        if (record.status === 'Late' && record.minutesLate > 0) {
+            // Apply tiered penalties for late arrivals
+            if (record.minutesLate <= 15) {
+                penalty = 0; // Tolerated if approved
+            } else if (record.minutesLate <= 30) {
+                penalty = dailyPay * 0.05; // 5%
+            } else if (record.minutesLate <= 60) {
+                penalty = dailyPay * 0.10; // 10%
+            } else if (record.minutesLate <= 120) {
+                penalty = dailyPay * 0.20; // 20%
+            }
+        } else if (record.status === 'Absent') {
+            penalty = dailyPay; // 100% of daily wage
+        }
+
+        return penalty > 0 ? `$${penalty.toFixed(2)}` : '$0.00';
     }
 });
