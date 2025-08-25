@@ -10,6 +10,7 @@
     "department": "Engineering",
     "dailyPay": 200.00
   },
+  
   {
     "id": 2,
     "employeeId": "E002",
