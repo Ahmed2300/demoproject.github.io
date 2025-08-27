@@ -136,12 +136,28 @@ document.addEventListener('DOMContentLoaded', function() {
                      <i class="fas fa-trash"></i>
                    </button>`;
             
+            // Show rejection reason if request was rejected
+            let reasonDisplay = truncatedReason;
+            if (request.status.toLowerCase() === 'rejected' && request.rejectionReason) {
+                reasonDisplay = `
+                    <div title="${reason}">${truncatedReason}</div>
+                    <div class="mt-1">
+                        <small class="text-danger">
+                            <i class="fas fa-exclamation-triangle me-1"></i>
+                            <strong>Rejection Reason:</strong> ${request.rejectionReason}
+                        </small>
+                    </div>
+                `;
+            } else {
+                reasonDisplay = `<div title="${reason}">${truncatedReason}</div>`;
+            }
+            
             row.innerHTML = `
                 <td>${request.requestId}</td>
                 <td>${request.requestType}</td>
                 <td>${dateDisplay}</td>
                 <td><span class="badge ${statusClass}">${request.status}</span></td>
-                <td title="${reason}">${truncatedReason}</td>
+                <td>${reasonDisplay}</td>
                 <td>${deleteButton}</td>
             `;
             tableBody.appendChild(row);

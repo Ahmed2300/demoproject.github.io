@@ -88,16 +88,16 @@ function loadRequestsForApproval(managerId, filters = {}) {
             <td>${request.reason}</td>
             <td>
                 <button class="btn btn-success btn-sm me-2" onclick="handleApproval('${request.requestId}', 'Approved', '${managerId}')">Approve</button>
-                <button class="btn btn-danger btn-sm" onclick="handleApproval('${request.requestId}', 'Rejected', '${managerId}')">Reject</button>
+                <button class="btn btn-danger btn-sm" onclick="showRejectionModal('${request.requestId}', '${managerId}')">Reject</button>
             </td>
         `;
         tableBody.appendChild(row);
     });
 }
 
-function handleApproval(requestId, newStatus, managerId) {
+function handleApproval(requestId, newStatus, managerId, rejectionReason = null) {
     console.log('Handling approval:', requestId, newStatus, managerId);
-    updateRequestStatus(requestId, newStatus);
+    updateRequestStatus(requestId, newStatus, rejectionReason);
     loadRequestsForApproval(managerId);
     updateDashboardStats(managerId);
     
@@ -143,13 +143,18 @@ function createToastContainer() {
     return container;
 }
 
-function updateRequestStatus(requestId, newStatus) {
+function updateRequestStatus(requestId, newStatus, rejectionReason = null) {
     let requests = JSON.parse(localStorage.getItem('requests')) || [];
     const requestIndex = requests.findIndex(req => req.requestId === requestId);
     if (requestIndex !== -1) {
         const request = requests[requestIndex];
         request.status = newStatus;
         request.processedDate = new Date().toISOString().slice(0, 10);
+        
+        // Add rejection reason if provided
+        if (newStatus === 'Rejected' && rejectionReason) {
+            request.rejectionReason = rejectionReason;
+        }
         
         // Apply request decision effects
         applyRequestDecisionEffects(request, newStatus);
@@ -474,6 +479,79 @@ function clearFilter(managerId) {
     modal.hide();
     
     showBootstrapToast('Filter cleared successfully!', 'success');
+}
+
+// Show rejection modal with required comment field
+function showRejectionModal(requestId, managerId) {
+    const modalHTML = `
+        <div class="modal fade" id="rejectionModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Reject Request</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Please provide a reason for rejecting this request. This will be visible to the employee.
+                        </div>
+                        <div class="mb-3">
+                            <label for="rejectionReason" class="form-label">Rejection Reason <span class="text-danger">*</span></label>
+                            <textarea id="rejectionReason" class="form-control" rows="4" placeholder="Enter the reason for rejection..." required></textarea>
+                            <div class="form-text">Be specific and constructive in your feedback.</div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-danger" onclick="confirmRejection('${requestId}', '${managerId}')">
+                            <i class="fas fa-times me-1"></i>Reject Request
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    // Remove existing modal if any
+    const existingModal = document.getElementById('rejectionModal');
+    if (existingModal) {
+        existingModal.remove();
+    }
+    
+    // Add modal to page
+    document.body.insertAdjacentHTML('beforeend', modalHTML);
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('rejectionModal'));
+    modal.show();
+}
+
+// Confirm rejection with reason
+function confirmRejection(requestId, managerId) {
+    const rejectionReason = document.getElementById('rejectionReason').value.trim();
+    
+    if (!rejectionReason) {
+        // Show error if no reason provided
+        const reasonField = document.getElementById('rejectionReason');
+        reasonField.classList.add('is-invalid');
+        
+        // Add error message if not exists
+        if (!reasonField.nextElementSibling || !reasonField.nextElementSibling.classList.contains('invalid-feedback')) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'invalid-feedback';
+            errorDiv.textContent = 'Rejection reason is required.';
+            reasonField.parentNode.insertBefore(errorDiv, reasonField.nextSibling);
+        }
+        return;
+    }
+    
+    // Process rejection with reason
+    handleApproval(requestId, 'Rejected', managerId, rejectionReason);
+    
+    // Close modal
+    const modal = bootstrap.Modal.getInstance(document.getElementById('rejectionModal'));
+    modal.hide();
 }
 
 // Dummy formatDate if not available globally
