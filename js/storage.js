@@ -2,26 +2,31 @@
 
 // Function to initialize data from JSON files into localStorage
 async function initializeData() {
-    const dataFiles = ['employees', 'attendance', 'requests', 'tasks', 'payroll'];
+    const dataFiles = ['employees', 'attendance', 'requests', 'tasks', 'payroll', 'settings'];
     console.log('Starting data initialization...');
     
     for (const file of dataFiles) {
-        if (!localStorage.getItem(file)) {
+        if (!localStorage.getItem(file === 'settings' ? 'systemSettings' : file)) {
             console.log(`Loading ${file}.json...`);
             try {
                 const response = await fetch(`data/${file}.json`);
                 console.log(`Response for ${file}.json:`, response.status, response.ok);
                 if (response.ok) {
                     const data = await response.json();
-                    localStorage.setItem(file, JSON.stringify(data));
-                    console.log(`Successfully loaded ${file}.json with ${data.length} items`);
+                    const storageKey = file === 'settings' ? 'systemSettings' : file;
+                    localStorage.setItem(storageKey, JSON.stringify(data));
+                    console.log(`Successfully loaded ${file}.json`);
                 } else {
                     console.error(`Failed to load ${file}.json: ${response.status}`);
-                    localStorage.setItem(file, JSON.stringify([]));
+                    const defaultData = file === 'settings' ? getDefaultSettings() : [];
+                    const storageKey = file === 'settings' ? 'systemSettings' : file;
+                    localStorage.setItem(storageKey, JSON.stringify(defaultData));
                 }
             } catch (error) {
                 console.error(`Error loading ${file}.json:`, error);
-                localStorage.setItem(file, JSON.stringify([]));
+                const defaultData = file === 'settings' ? getDefaultSettings() : [];
+                const storageKey = file === 'settings' ? 'systemSettings' : file;
+                localStorage.setItem(storageKey, JSON.stringify(defaultData));
             }
         } else {
             console.log(`${file}.json already exists in localStorage`);
@@ -116,6 +121,46 @@ function updateEmployee(employeeId, updates) {
     let employees = JSON.parse(localStorage.getItem('employees')) || [];
     employees = employees.map(emp => emp.employeeId === employeeId ? { ...emp, ...updates } : emp);
     localStorage.setItem('employees', JSON.stringify(employees));
+}
+
+// --- Settings Functions ---
+function getDefaultSettings() {
+    return {
+        deductionCapPercent: 25,
+        idealEmployeeBonusPercent: 10,
+        overtime: {
+            weekdayMultiplier: 1.25,
+            weekendMultiplier: 1.5,
+            policy: "pay"
+        },
+        latePenalties: [
+            { minutes: 30, percent: 5 },
+            { minutes: 60, percent: 10 },
+            { minutes: 120, percent: 20 }
+        ],
+        taskPenalties: [
+            { priority: "Low", percent: 5 },
+            { priority: "Medium", percent: 8 },
+            { priority: "High", percent: 12 },
+            { priority: "Critical", percent: 15 }
+        ],
+        absencePenalty: {
+            percent: 100,
+            vacationDeduction: 1
+        },
+        workweek: {
+            weekendDays: ["friday", "saturday"]
+        }
+    };
+}
+
+function getSystemSettings() {
+    const settings = localStorage.getItem('systemSettings');
+    return settings ? JSON.parse(settings) : getDefaultSettings();
+}
+
+function saveSystemSettings(settings) {
+    localStorage.setItem('systemSettings', JSON.stringify(settings));
 }
 
 // Initialize data on script load

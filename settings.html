@@ -139,7 +139,7 @@
                     <h1 class="fw-bold text-dark mb-2">
                         <i class="fas fa-cogs me-3 text-primary"></i>System Settings
                     </h1>
-                    <p class="text-muted mb-0">Manage employee information and system configurations</p>
+                    <p class="text-muted mb-0">Configure system-wide settings for attendance, payroll, and HR policies</p>
                 </div>
                 <div class="col-md-4 text-end">
                     <div class="d-flex align-items-center justify-content-end">
@@ -150,96 +150,247 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="col-lg-6 mb-4">
-                <div class="card settings-card h-100">
+        <!-- Attendance & Penalties Configuration -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card settings-card">
                     <div class="card-header">
                         <h5 class="card-title mb-0 fw-semibold">
-                            <i class="fas fa-user-edit me-2"></i>Update Employee
+                            <i class="fas fa-clock me-2"></i>Attendance & Penalties Configuration
                         </h5>
-                        <small class="opacity-75">Modify existing employee details</small>
+                        <small class="opacity-75">Configure late penalties and absence rules</small>
                     </div>
                     <div class="card-body p-4">
-                        <form id="update-employee-form">
-                            <div class="mb-4">
-                                <label for="employee-select" class="form-label fw-medium text-dark">Select Employee</label>
-                                <select id="employee-select" class="form-select" required>
-                                    <option value="">Choose an employee...</option>
-                                    <!-- Employee options will be populated here -->
-                                </select>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="fw-bold mb-3">Late Penalty Tiers</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">Deduction for lateness from 16 to 30 minutes (%)</label>
+                                    <input type="number" id="late-16-30" class="form-control" value="5" min="0" max="100">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Deduction for lateness from 31 to 60 minutes (%)</label>
+                                    <input type="number" id="late-31-60" class="form-control" value="10" min="0" max="100">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Deduction for lateness from 61 to 120 minutes (%)</label>
+                                    <input type="number" id="late-61-120" class="form-control" value="20" min="0" max="100">
+                                </div>
                             </div>
-                            <div class="mb-4">
-                                <label for="role-select" class="form-label fw-medium text-dark">New Role</label>
-                                <select id="role-select" class="form-select" required>
-                                    <option value="">Select role...</option>
-                                    <option value="Employee">Employee</option>
-                                    <option value="Manager">Manager</option>
-                                    <option value="HR">HR</option>
-                                    <option value="Security">Security</option>
-                                </select>
+                            <div class="col-md-6">
+                                <h6 class="fw-bold mb-3">Absence Penalty</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">Percentage of deduction from daily pay (%)</label>
+                                    <input type="number" id="absence-penalty" class="form-control" value="100" min="0" max="100">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Number of vacation days deducted from annual balance</label>
+                                    <input type="number" id="vacation-deduction" class="form-control" value="1" min="0" max="30">
+                                </div>
                             </div>
-                            <div class="mb-4">
-                                <label for="department-select" class="form-label fw-medium text-dark">New Department</label>
-                                <select id="department-select" class="form-select" required>
-                                    <option value="">Select department...</option>
-                                    <option value="Engineering">Engineering</option>
-                                    <option value="HR">HR</option>
-                                    <option value="Sales">Sales</option>
-                                    <option value="Security">Security</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="btn btn-primary w-100">
-                                <i class="fas fa-save me-2"></i>Update Employee
-                            </button>
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <div class="col-lg-6 mb-4">
+        <!-- Overtime Configuration -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card settings-card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0 fw-semibold">
+                            <i class="fas fa-business-time me-2"></i>Overtime Configuration
+                        </h5>
+                        <small class="opacity-75">Configure overtime multipliers and compensation policy</small>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="fw-bold mb-3">Overtime Multipliers</h6>
+                                <div class="mb-3">
+                                    <label class="form-label">Weekdays coefficient</label>
+                                    <input type="number" id="weekday-multiplier" class="form-control" value="1.25" step="0.01" min="1">
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label">Weekends/Holidays coefficient</label>
+                                    <input type="number" id="weekend-multiplier" class="form-control" value="1.5" step="0.01" min="1">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <h6 class="fw-bold mb-3">Overtime Compensation Policy</h6>
+                                <div class="mb-3">
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="radio" name="overtime-policy" id="pay-policy" value="pay" checked>
+                                        <label class="form-check-label" for="pay-policy">
+                                            <strong>Pay</strong> (default option)
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="radio" name="overtime-policy" id="time-off-policy" value="time-off">
+                                        <label class="form-check-label" for="time-off-policy">
+                                            <strong>Add hours to the balance</strong><br>
+                                            <small class="text-muted">(Time Off in Lieu)</small>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Task Penalties Configuration -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card settings-card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0 fw-semibold">
+                            <i class="fas fa-tasks me-2"></i>Task Penalties Configuration
+                        </h5>
+                        <small class="opacity-75">Configure task deadline penalties by priority</small>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label">Low Priority (%)</label>
+                                    <input type="number" id="task-low-penalty" class="form-control" value="5" min="0" max="100">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label">Medium Priority (%)</label>
+                                    <input type="number" id="task-medium-penalty" class="form-control" value="8" min="0" max="100">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label">High Priority (%)</label>
+                                    <input type="number" id="task-high-penalty" class="form-control" value="12" min="0" max="100">
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="mb-3">
+                                    <label class="form-label">Critical Priority (%)</label>
+                                    <input type="number" id="task-critical-penalty" class="form-control" value="15" min="0" max="100">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- General Payroll Configuration -->
+        <div class="row mb-4">
+            <div class="col-md-6">
                 <div class="card settings-card h-100">
                     <div class="card-header">
                         <h5 class="card-title mb-0 fw-semibold">
-                            <i class="fas fa-user-plus me-2"></i>Add New Employee
+                            <i class="fas fa-calculator me-2"></i>General Payroll Configuration
                         </h5>
-                        <small class="opacity-75">Create a new employee profile</small>
+                        <small class="opacity-75">Configure payroll limits and caps</small>
                     </div>
                     <div class="card-body p-4">
-                        <form id="add-employee-form">
-                            <div class="mb-4">
-                                <label for="new-employee-name" class="form-label fw-medium text-dark">Full Name</label>
-                                <input type="text" id="new-employee-name" class="form-control" placeholder="Enter full name" required>
-                            </div>
-                            <div class="mb-4">
-                                <label for="new-employee-email" class="form-label fw-medium text-dark">Email Address</label>
-                                <input type="email" id="new-employee-email" class="form-control" placeholder="Enter email address" required>
-                            </div>
-                            <div class="mb-4">
-                                <label for="new-employee-role" class="form-label fw-medium text-dark">Role</label>
-                                <select id="new-employee-role" class="form-select" required>
-                                    <option value="">Select role...</option>
-                                    <option value="Employee">Employee</option>
-                                    <option value="Manager">Manager</option>
-                                    <option value="HR">HR</option>
-                                    <option value="Security">Security</option>
-                                </select>
-                            </div>
-                            <div class="mb-4">
-                                <label for="new-employee-department" class="form-label fw-medium text-dark">Department</label>
-                                <select id="new-employee-department" class="form-select" required>
-                                    <option value="">Select department...</option>
-                                    <option value="Engineering">Engineering</option>
-                                    <option value="HR">HR</option>
-                                    <option value="Sales">Sales</option>
-                                    <option value="Security">Security</option>
-                                </select>
-                            </div>
-                            <button type="submit" class="btn btn-success w-100">
-                                <i class="fas fa-plus me-2"></i>Add Employee
-                            </button>
-                        </form>
+                        <div class="mb-3">
+                            <label class="form-label">Maximum deductions from monthly salary (%)</label>
+                            <input type="number" id="monthly-deduction-cap" class="form-control" value="25" min="0" max="100">
+                            <small class="form-text text-muted">Security rule to prevent excessive deductions</small>
+                        </div>
                     </div>
                 </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card settings-card h-100">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0 fw-semibold">
+                            <i class="fas fa-award me-2"></i>Incentives & Awards Configuration
+                        </h5>
+                        <small class="opacity-75">Configure ideal employee bonus</small>
+                    </div>
+                    <div class="card-body p-4">
+                        <div class="mb-3">
+                            <label class="form-label">Bonus percentage of monthly salary (%)</label>
+                            <input type="number" id="ideal-employee-bonus" class="form-control" value="10" min="0" max="100">
+                            <small class="form-text text-muted">Bonus for employees meeting ideal criteria</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- General System Configuration -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card settings-card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0 fw-semibold">
+                            <i class="fas fa-calendar-week me-2"></i>General System Configuration
+                        </h5>
+                        <small class="opacity-75">Configure workweek and system-wide settings</small>
+                    </div>
+                    <div class="card-body p-4">
+                        <h6 class="fw-bold mb-3">Workweek Configuration</h6>
+                        <p class="text-muted mb-3">Select the days that are considered weekends/holidays:</p>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="sunday-weekend" value="sunday">
+                                    <label class="form-check-label" for="sunday-weekend">Sunday</label>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="monday-weekend" value="monday">
+                                    <label class="form-check-label" for="monday-weekend">Monday</label>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="tuesday-weekend" value="tuesday">
+                                    <label class="form-check-label" for="tuesday-weekend">Tuesday</label>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="wednesday-weekend" value="wednesday">
+                                    <label class="form-check-label" for="wednesday-weekend">Wednesday</label>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="thursday-weekend" value="thursday">
+                                    <label class="form-check-label" for="thursday-weekend">Thursday</label>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="friday-weekend" value="friday" checked>
+                                    <label class="form-check-label" for="friday-weekend">Friday</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="saturday-weekend" value="saturday" checked>
+                                    <label class="form-check-label" for="saturday-weekend">Saturday</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Save Settings Button -->
+        <div class="row">
+            <div class="col-12 text-center">
+                <button type="button" class="btn btn-primary btn-lg" onclick="saveAllSettings()">
+                    <i class="fas fa-save me-2"></i>Save All Settings
+                </button>
             </div>
         </div>
     </div>

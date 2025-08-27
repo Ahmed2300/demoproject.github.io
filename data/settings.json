@@ -1,0 +1,27 @@
+{
+  "deductionCapPercent": 25,
+  "idealEmployeeBonusPercent": 10,
+  "overtime": {
+    "weekdayMultiplier": 1.25,
+    "weekendMultiplier": 1.5,
+    "policy": "pay"
+  },
+  "latePenalties": [
+    { "minutes": 30, "percent": 5 },
+    { "minutes": 60, "percent": 10 },
+    { "minutes": 120, "percent": 20 }
+  ],
+  "taskPenalties": [
+    { "priority": "Low", "percent": 5 },
+    { "priority": "Medium", "percent": 8 },
+    { "priority": "High", "percent": 12 },
+    { "priority": "Critical", "percent": 15 }
+  ],
+  "absencePenalty": {
+    "percent": 100,
+    "vacationDeduction": 1
+  },
+  "workweek": {
+    "weekendDays": ["friday", "saturday"]
+  }
+}
